@@ -1,0 +1,249 @@
+-- drop database
+DROP DATABASE IF EXISTS PowersMilburnCIS4043Milestone3;
+CREATE DATABASE PowersMilburnCIS4043Milestone3;
+USE PowersMilburnCIS4043Milestone3;
+
+-- Drop all tables
+DROP TABLE IF EXISTS CoR;
+DROP TABLE IF EXISTS CDs;
+DROP TABLE IF EXISTS Video_Games;
+DROP TABLE IF EXISTS DVDs;
+DROP TABLE IF EXISTS Copies;
+DROP TABLE IF EXISTS Purchases;
+DROP TABLE IF EXISTS Rentals;
+DROP TABLE IF EXISTS Sales;
+DROP TABLE IF EXISTS Interests;
+DROP TABLE IF EXISTS Titles;
+DROP TABLE IF EXISTS Employees;
+DROP TABLE IF EXISTS Customers;
+
+-- customers table
+CREATE TABLE Customers
+(cust_id INT,
+f_name VARCHAR (50),
+l_name VARCHAR (50),
+address VARCHAR (50),
+zip_code INT,
+Phone INT,
+Email VARCHAR (50),
+CONSTRAINT customers_pk1 PRIMARY KEY (cust_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+
+-- insert into customers
+INSERT INTO Customers VALUES 
+(1, 'Mallory', 'Powers', '3112 E 5th Pl', 74104, 0123456789, 'mal@utulsa.edu');
+INSERT INTO Customers VALUES 
+(2, 'Lauren', 'Milburn', '3100 E 5th Pl', 74104, 1234567890, 'lauren@utulsa.edu');
+INSERT INTO Customers VALUES 
+(3, 'Golden', 'Hurricane', '800 S Tucker Dr.', 74104, 2345678901, 'golden@gmail.com');
+
+
+-- employees table
+CREATE TABLE Employees
+(employee_id INT,
+NAME VARCHAR (50),
+address VARCHAR (90),
+phone VARCHAR (20),
+email VARCHAR(50),
+RANK VARCHAR(50),
+salary VARCHAR (30),
+CONSTRAINT employees_pk1 PRIMARY KEY (employee_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- employees (id, name, address, phone, email, rank/position (employee or manager), salary)
+INSERT INTO Employees VALUES 
+(1, 'Maddy Willis', '801 S Tucker Dr.', 3456789012, 'maddy-willis@utulsa.edu', 'Employee', 20000.20);
+INSERT INTO Employees VALUES 
+(2, 'Victoria Tucker', '802 S Tucker Dr.', 4567890123, 'v-tuck@utulsa.edu', 'Supervisor', 60000.00);
+INSERT INTO Employees VALUES 
+(3, 'Goldie Dog', '12 Ruff Dr.', 5678901234, 'goldie@gmail.com', 'Manage', 42000.20);
+
+
+-- titles table
+CREATE TABLE Titles
+(title_id INT,
+title VARCHAR (70),
+type_of_medium VARCHAR (70),
+CONSTRAINT titles_pk1 PRIMARY KEY (title_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- titles (id, title, genre)
+INSERT INTO Titles VALUES 
+(1, 'The Help', 'DVD');
+INSERT INTO Titles VALUES 
+(2, 'Fortnite', 'Video Game');
+INSERT INTO Titles VALUES 
+(3, 'Babel', 'CD');
+
+-- Interests table
+CREATE TABLE Interests
+(cust_id INT,
+interest_type VARCHAR(50),
+CONSTRAINT interests_pk1 PRIMARY KEY (cust_id, interest_type),
+CONSTRAINT interests_fk1 FOREIGN KEY (cust_id) REFERENCES customers(cust_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- insert interests
+INSERT INTO Interests VALUES 
+(1, 'outdoors');
+INSERT INTO Interests VALUES 
+(2, 'outerspace');
+INSERT INTO Interests VALUES 
+(3, 'studying');
+
+-- sales table
+CREATE TABLE Sales
+(sale_id INT, 
+DATE DATE,
+Amount VARCHAR (30),
+SbyE_employee_id INT,
+StoC_cust_id INT,
+CONSTRAINT sales_pk1 PRIMARY KEY (sale_id),
+CONSTRAINT sales_fk1 FOREIGN KEY (StoC_cust_id) REFERENCES customers (cust_id),
+CONSTRAINT sales_fk2 FOREIGN KEY (SbyE_employee_id) REFERENCES employees (employee_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- insert sales
+INSERT INTO Sales VALUES 
+(1, DATE '2000-01-01', 23.00, 1, 2);
+INSERT INTO Sales VALUES 
+(2, DATE '2001-03-20', 13.30, 2, 1);
+INSERT INTO Sales VALUES 
+(3, DATE '2017-08-23', 7.45, 3, 3);
+
+-- rentals table
+CREATE TABLE Rentals
+(rental_id INT, 
+DATE DATE,
+Due_date DATE, 
+Amount INT, 
+Paid VARCHAR (50),
+RtoC_cust_id INT,
+RbyE_employee_id INT,
+CONSTRAINT rentals_pk1 PRIMARY KEY (rental_id),
+CONSTRAINT rentals_fk1 FOREIGN KEY (RtoC_cust_id) REFERENCES customers(cust_id),
+CONSTRAINT rentals_fk2 FOREIGN KEY (RbyE_employee_id) REFERENCES employees(employee_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- rentals ( id, date, due date, amount, paid, rtoc id, rbye emp id)
+INSERT INTO Rentals VALUES 
+(1, DATE '2015-11-12', DATE '2015-12-12', 3.00, 'no', 1, 2);
+INSERT INTO Rentals VALUES 
+(2, DATE '2012-10-17', DATE '2012-11-17', 8.00, 'yes', 2, 1);
+INSERT INTO Rentals VALUES 
+(3, DATE '2010-08-12', DATE '2010-09-12', 6.50, 'no', 3, 3);
+
+
+-- purchases table
+CREATE TABLE Purchases
+(purchase_id INT,
+PtoC_cust_id INT,
+PbyE_employee_id INT,
+DATE DATE,
+amount VARCHAR (50),
+CONSTRAINT purchases_pk1 PRIMARY KEY (purchase_id),
+CONSTRAINT purchases_fk1 FOREIGN KEY (PtoC_cust_id) REFERENCES customers(cust_id),
+CONSTRAINT purchases_fk2 FOREIGN KEY (PbyE_employee_id) REFERENCES employees(employee_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- purchases (id, date, amount, purchase by cust id, purchase by employee id)
+INSERT INTO Purchases VALUES 
+(1, 1, 1,  DATE '2018-04-20', 32.00);
+INSERT INTO Purchases VALUES 
+(2, 2, 2, DATE '2018-05-25', 30.00);
+INSERT INTO Purchases VALUES 
+(3, 3, 3, DATE '2018-09-10', 13.00);
+
+-- copies table
+CREATE TABLE Copies
+(copy_id INT,
+CoT_title_id INT,
+SCo_sale_id INT,
+PCo_purchase_id INT,
+CONSTRAINT copies_pk1 PRIMARY KEY (copy_id),
+CONSTRAINT copies_fk1 FOREIGN KEY (CoT_title_id) REFERENCES titles(title_id),
+CONSTRAINT copies_fk2 FOREIGN KEY (SCo_sale_id) REFERENCES sales(sale_id),
+CONSTRAINT copies_fk3 FOREIGN KEY (PCo_purchase_id) REFERENCES purchases(purchase_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+--  copies (copy id, cp purchase id, sale id, title id)
+INSERT INTO Copies  VALUES 
+(1, 2 ,3, 1);
+INSERT INTO Copies VALUES 
+(2, 3, 1, 2);
+INSERT INTO Copies VALUES 
+(3, 1, 2, 3);
+
+-- DVDs table
+CREATE TABLE DVDs
+(title_id INT,
+dvd_genre VARCHAR (50),
+dvd_director VARCHAR (50),
+dvd_hero VARCHAR (50),
+dvd_heroine VARCHAR (50),
+dvd_year VARCHAR(5),
+CONSTRAINT dvds_pk1 PRIMARY KEY (title_id),
+CONSTRAINT dvds_fk1 FOREIGN KEY (title_id) REFERENCES titles(title_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- dvds (id, genre, director, hero, heroine, year)
+INSERT INTO DVDs VALUES 
+(1, 'Family', 'Tate Taylor', 'Stuart Whitworth', 'Skeeter Phelan', '2011');
+INSERT INTO DVDs VALUES 
+(2, 'Horror', 'David Gordon Green', 'Nick Castle', 'Jamie Lee Curtis', '2018');
+INSERT INTO DVDs VALUES 
+(3, 'Comedy', 'Adam McKay', 'Ricky Bobby', 'Susan', '2006');
+
+-- video games table
+CREATE TABLE Video_Games
+(title_id INT,
+vg_rating  VARCHAR (50),
+vg_genre VARCHAR (50),
+vg_platform VARCHAR (50),
+CONSTRAINT video_games_pk1 PRIMARY KEY (title_id),
+CONSTRAINT video_games_fk1 FOREIGN KEY (title_id) REFERENCES titles(title_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- video games (id, platform, age rating)
+INSERT INTO Video_Games VALUES  
+(1,  'M', 'Action', 'Playstation');
+INSERT INTO  Video_Games VALUES 
+(2, 'E', 'Action', 'XBox');
+INSERT INTO  Video_Games VALUES 
+(3, 'E', 'Adventure', 'GameCube'); 
+
+-- CDs table
+CREATE TABLE CDs
+(title_id INT,
+cd_artist  VARCHAR (50),
+cd_genre VARCHAR (50),
+cd_label VARCHAR (50),
+CONSTRAINT CDs_pk1 PRIMARY KEY (title_id),
+CONSTRAINT CDs_fk1 FOREIGN KEY (title_id) REFERENCES titles(title_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- cds (id, artist, type of music, music label)
+INSERT INTO CDs VALUES 
+(1, 'Young the Giant', 'Alternative Rock', 'Elektra');
+INSERT INTO CDs VALUES 
+(2, 'Jonas Brothers', 'Pop', 'Walt Disney');
+INSERT INTO CDs VALUES 
+(3, 'Mumford and Sons', 'Folk Rock', 'Markus Dravs');
+
+-- Copies to Rentals table
+CREATE TABLE CoR
+(rental_id INT,
+copy_id INT,
+CONSTRAINT CoR_pk1 PRIMARY KEY (rental_id, copy_id),
+CONSTRAINT CoR_fk1 FOREIGN KEY (rental_id) REFERENCES rentals(rental_id),
+CONSTRAINT CoR_fk2 FOREIGN KEY (copy_id) REFERENCES copies(copy_id))
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- cor (rental id, copy id)
+INSERT INTO CoR VALUES 
+(1,3);
+INSERT INTO CoR VALUES 
+(2,1);
+INSERT INTO CoR VALUES 
+(3,2);
